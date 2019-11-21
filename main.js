@@ -13,11 +13,16 @@ let fieldWidth;
 let field;
 let tempField;
 let age;
+let initialFill = 0.5;
+let minFill = 0.01;
+let maxFill = 0.5;
+let currentFill;
+let cellsCount = 0;
+let capacity;
+let generations = 0;
+let mode = "day&night";
 
 fieldDefinition();
-
-let generations = 1;
-document.title = "Generation: " + generations;
 
 setInterval(go, 50);
 
@@ -35,26 +40,22 @@ function fieldDefinition() {
     for (let i = 0; i < fieldHeight; i++) {
         field[i] = new Array(fieldWidth);
     }
-
     tempField = new Array(fieldHeight);
     for (let i = 0; i < fieldHeight; i++) {
         tempField[i] = new Array(fieldWidth);
     }
     */
-
     /*
     field = [];
     for (let i = 0; i < fieldHeight; i++) {
         field.push(new Array(fieldWidth));
     }
-
     tempField = [];
     for (let i = 0; i < fieldHeight; i++) {
         tempField.push(new Array(fieldWidth));
     }
     */
 
-    
     field = [];
     for (let i = 0; i < fieldHeight; i++) {
         field.push([]);
@@ -74,24 +75,7 @@ function fieldDefinition() {
             tempField[i].push();
         }
     }
-    
 
-    for (let i = 0; i < fieldHeight; i++) {
-        for (let j = 0; j < fieldWidth; j++) {
-            field[i][j] = Math.round(Math.random());
-        }
-    }
-
-    ctx.fillStyle = "#00FF00";
-    for (let i = 0; i < fieldHeight; i++) {
-        for (let j = 0; j < fieldWidth; j++) {
-            if (field[i][j] == 1) {
-                ctx.fillRect(j * (side + gap), i * (side + gap), side, side);
-            }
-        }
-    }
-
-    //age
     age = [];
     for (let i = 0; i < fieldHeight; i++) {
         age.push([]);
@@ -104,11 +88,47 @@ function fieldDefinition() {
 
     for (let i = 0; i < fieldHeight; i++) {
         for (let j = 0; j < fieldWidth; j++) {
+            if (Math.random() < initialFill) {
+                field[i][j] = 1;
+            } else {
+                field[i][j] = 0;
+            }
+        }
+    }
+
+    for (let i = 0; i < fieldHeight; i++) {
+        for (let j = 0; j < fieldWidth; j++) {
             if (field[i][j] == 1) {
                 age[i][j] = 0;
             }
         }
     }
+
+    //alive cells drawing
+    ctx.fillStyle = "#00FF00";
+    for (let i = 0; i < fieldHeight; i++) {
+        for (let j = 0; j < fieldWidth; j++) {
+            if (field[i][j] == 1) {
+                ctx.fillRect(j * (side + gap), i * (side + gap), side, side);
+            }
+        }
+    }
+
+    //alive cells counting
+    for (let i = 0; i < fieldHeight; i++) {
+        for (let j = 0; j < fieldWidth; j++) {
+            if (field[i][j] == 1) {
+                cellsCount++;
+            }
+        }
+    }
+
+    capacity = fieldHeight * fieldWidth;
+
+    generations++;
+
+    currentFill = cellsCount / capacity;
+    document.title = Math.round(currentFill * 1000) / 10 + " %";
 }
 
 function go() {
@@ -147,14 +167,37 @@ function go() {
                 count++;
             }
 
-            //day & night
-            if (field[i][j] == 0) {
-                if (count == 3 || count >= 6) {
-                    tempField[i][j] = 1;
+            if (mode == "day&night") {
+                if (currentFill < minFill) {
+                    mode = "B34/S345"
                 }
             } else {
-                if (count <= 2 || count == 5) {
-                    tempField[i][j] = 0;
+                if (currentFill > maxFill) {
+                    mode = "day&night"
+                }
+            }
+
+            if (mode == "day&night") {
+                //day & night
+                if (field[i][j] == 0) {
+                    if (count == 3 || count >= 6) {
+                        tempField[i][j] = 1;
+                    }
+                } else {
+                    if (count <= 2 || count == 5) {
+                        tempField[i][j] = 0;
+                    }
+                }
+            } else {
+                //B34/S345
+                if (field[i][j] == 0) {
+                    if (count == 3 || count == 4) {
+                        tempField[i][j] = 1;
+                    }
+                } else {
+                    if (count <= 2 || count >= 6) {
+                        tempField[i][j] = 0;
+                    }
                 }
             }
 
@@ -165,6 +208,17 @@ function go() {
                 }
             } else {
                 if (count <= 1 || count >= 4) {
+                    tempField[i][j] = 0;
+                }
+            }*/
+
+            //B34/S34
+            /*if (field[i][j] == 0) {
+                if (count == 3 || count == 4) {
+                    tempField[i][j] = 1;
+                }
+            } else {
+                if (count <= 2 || count >= 5) {
                     tempField[i][j] = 0;
                 }
             }*/
@@ -182,7 +236,7 @@ function go() {
                 if (tempField[i][j] == 0) {
                     age[i][j] = undefined;
                 } else {
-                    if (age[i][j] < 5) {
+                    if (age[i][j] < 8) {
                         age[i][j]++;
                     }
                 }
@@ -205,7 +259,7 @@ function go() {
             if (field[i][j] == 1) {
                 switch (age[i][j]) {
                     case 0:
-                        ctx.fillStyle = "#00FF00";
+                        ctx.fillStyle = "#00FF00"; //green
                         break;
                     case 1:
                         ctx.fillStyle = "#33FF00";
@@ -220,7 +274,16 @@ function go() {
                         ctx.fillStyle = "#CCFF00";
                         break;
                     case 5:
-                        ctx.fillStyle = "#FFFF00";
+                        ctx.fillStyle = "#FFFF00"; //yellow
+                        break;
+                    case 6:
+                        ctx.fillStyle = "#FFCC00";
+                        break;
+                    case 7:
+                        ctx.fillStyle = "#FF9900";
+                        break;
+                    case 8:
+                        ctx.fillStyle = "#FF6600"; //orange
                         break;
                 }
                 ctx.fillRect(j * (side + gap), i * (side + gap), side, side);
@@ -229,5 +292,17 @@ function go() {
     }
 
     generations++;
-    document.title = "Generation: " + generations;
+
+    //alive cells counting
+    cellsCount = 0;
+    for (let i = 0; i < fieldHeight; i++) {
+        for (let j = 0; j < fieldWidth; j++) {
+            if (field[i][j] == 1) {
+                cellsCount++;
+            }
+        }
+    }
+
+    currentFill = cellsCount / capacity;
+    document.title = Math.round(currentFill * 1000) / 10 + " %";
 }
