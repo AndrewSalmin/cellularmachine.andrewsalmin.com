@@ -13,9 +13,9 @@ let fieldWidth;
 let field;
 let tempField;
 let age;
-let initialFill = 0.5;
-let minFill = 0.01;
-let maxFill = 0.5;
+let initialFill = 0.4;
+let minFill = 0.1;
+let maxFill = 0.4;
 let currentFill;
 let cellsCount = 0;
 let capacity;
@@ -189,13 +189,13 @@ function go() {
                     }
                 }
             } else {
-                //B34/S345
+                //B34/S34
                 if (field[i][j] == 0) {
                     if (count == 3 || count == 4) {
                         tempField[i][j] = 1;
                     }
                 } else {
-                    if (count <= 2 || count >= 6) {
+                    if (count <= 2 || count >= 5) {
                         tempField[i][j] = 0;
                     }
                 }
@@ -212,13 +212,13 @@ function go() {
                 }
             }*/
 
-            //B34/S34
+            //B34/S345
             /*if (field[i][j] == 0) {
                 if (count == 3 || count == 4) {
                     tempField[i][j] = 1;
                 }
             } else {
-                if (count <= 2 || count >= 5) {
+                if (count <= 2 || count >= 6) {
                     tempField[i][j] = 0;
                 }
             }*/
