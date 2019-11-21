@@ -14,7 +14,7 @@ let field;
 let tempField;
 let age;
 let initialFill = 0.43;
-let minFill = 0.02;
+let minFill = 0.03;
 let maxFill = 0.43;
 let currentFill;
 let cellsCount = 0;
