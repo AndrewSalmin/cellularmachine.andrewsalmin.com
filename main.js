@@ -3,7 +3,7 @@
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 
-let side = 5;
+let side = 10;
 let gap = 1;
 
 canvasCalculation();
