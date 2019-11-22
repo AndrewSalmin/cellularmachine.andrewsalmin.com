@@ -3,7 +3,7 @@
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 
-let side = 10;
+let side = 5;
 let gap = 1;
 
 canvasCalculation();
@@ -13,9 +13,9 @@ let fieldWidth;
 let field;
 let tempField;
 let age;
-let initialFill = 0.43;
-let minFill = 0.05;
-let maxFill = 0.43;
+let initialFill = 0.48;
+let minFill = 0.005;
+let maxFill = 0.48;
 let currentFill;
 let cellsCount = 0;
 let capacity;
@@ -169,7 +169,7 @@ function go() {
 
             if (mode == "day&night") {
                 if (currentFill < minFill) {
-                    mode = "B34/S345"
+                    mode = "B34/S3478"
                 }
             } else {
                 if (currentFill > maxFill) {
@@ -189,7 +189,7 @@ function go() {
                     }
                 }
             } else {
-                //B34/S34678
+                //B34/S3478 (max 48 %)
                 if (field[i][j] == 0) {
                     if (count == 3 || count == 4) {
                         tempField[i][j] = 1;
@@ -212,7 +212,95 @@ function go() {
                 }
             }*/
 
-            //B34/S345
+            //B34/S34 (max 41 %)
+            /*if (field[i][j] == 0) {
+                if (count == 3 || count == 4) {
+                    tempField[i][j] = 1;
+                }
+            } else {
+                if (count <= 2 || count >= 5) {
+                    tempField[i][j] = 0;
+                }
+            }*/
+
+            //B34/S348 (max 43 %)
+            /*if (field[i][j] == 0) {
+                if (count == 3 || count == 4) {
+                    tempField[i][j] = 1;
+                }
+            } else {
+                if (count <= 2 || count == 5 || count == 6 || count == 7) {
+                    tempField[i][j] = 0;
+                }
+            }*/
+
+            //B34/S347 (max 47 %)
+            /*if (field[i][j] == 0) {
+                if (count == 3 || count == 4) {
+                    tempField[i][j] = 1;
+                }
+            } else {
+                if (count <= 2 || count == 5 || count == 6 || count == 8) {
+                    tempField[i][j] = 0;
+                }
+            }*/
+
+            //B34/S3478 (max 48 %) исправлено
+            /*if (field[i][j] == 0) {
+                if (count == 3 || count == 4) {
+                    tempField[i][j] = 1;
+                }
+            } else {
+                if (count <= 2 || count == 5 || count == 6) {
+                    tempField[i][j] = 0;
+                }
+            }*/
+
+            //B34/S346 (max 52 %)
+            /*if (field[i][j] == 0) {
+                if (count == 3 || count == 4) {
+                    tempField[i][j] = 1;
+                }
+            } else {
+                if (count <= 2 || count == 5 || count >= 7) {
+                    tempField[i][j] = 0;
+                }
+            }*/
+
+            //B34/S3468 (max 52 %)
+            /*if (field[i][j] == 0) {
+                if (count == 3 || count == 4) {
+                    tempField[i][j] = 1;
+                }
+            } else {
+                if (count <= 2 || count == 5 || count == 7) {
+                    tempField[i][j] = 0;
+                }
+            }*/
+
+            //B34/S3467 (max 54 %)
+            /*if (field[i][j] == 0) {
+                if (count == 3 || count == 4) {
+                    tempField[i][j] = 1;
+                }
+            } else {
+                if (count <= 2 || count == 5 || count == 8) {
+                    tempField[i][j] = 0;
+                }
+            }*/
+
+            //B34/S34678 (max 55 %)
+            /*if (field[i][j] == 0) {
+                if (count == 3 || count == 4) {
+                    tempField[i][j] = 1;
+                }
+            } else {
+                if (count <= 2 || count == 5) {
+                    tempField[i][j] = 0;
+                }
+            }*/
+
+            //B34/S345 (max 56 %)
             /*if (field[i][j] == 0) {
                 if (count == 3 || count == 4) {
                     tempField[i][j] = 1;
