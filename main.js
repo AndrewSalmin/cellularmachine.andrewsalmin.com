@@ -189,13 +189,13 @@ function go() {
                     }
                 }
             } else {
-                //B34/S34
+                //B34/S34678
                 if (field[i][j] == 0) {
                     if (count == 3 || count == 4) {
                         tempField[i][j] = 1;
                     }
                 } else {
-                    if (count <= 2 || count >= 5) {
+                    if (count <= 2 || count = 5) {
                         tempField[i][j] = 0;
                     }
                 }
