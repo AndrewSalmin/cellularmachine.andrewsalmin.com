@@ -195,7 +195,7 @@ function go() {
                         tempField[i][j] = 1;
                     }
                 } else {
-                    if (count <= 2 || count == 5) {
+                    if (count <= 2 || count == 5 || count == 6) {
                         tempField[i][j] = 0;
                     }
                 }
