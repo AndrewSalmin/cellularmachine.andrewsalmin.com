@@ -14,7 +14,7 @@ let field;
 let tempField;
 let age;
 let initialFill = 0.43;
-let minFill = 0.03;
+let minFill = 0.05;
 let maxFill = 0.43;
 let currentFill;
 let cellsCount = 0;
@@ -195,7 +195,7 @@ function go() {
                         tempField[i][j] = 1;
                     }
                 } else {
-                    if (count <= 2 || count = 5) {
+                    if (count <= 2 || count == 5) {
                         tempField[i][j] = 0;
                     }
                 }
