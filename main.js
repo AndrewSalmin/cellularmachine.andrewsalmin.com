@@ -3,58 +3,41 @@
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 
-let side = 10;
+let side = 5;
 let gap = 1;
-
-canvasCalculation();
 
 let fieldHeight;
 let fieldWidth;
+
 let field;
 let tempField;
 let age;
+
 let initialFill = 0.48;
-let minFill = 0.01;
+let minFill = 0.03;
 let maxFill = 0.48;
 let currentFill;
-let cellsCount = 0;
+
+let cellsCount;
 let capacity;
-let generations = 0;
+
+let relatedBoundaries = false;
+
 let mode = "day&night";
 
-fieldDefinition();
+let generations;
+
+initialization();
 
 setInterval(go, 50);
 
-function canvasCalculation() {
-    canvas.width = window.innerWidth - window.innerWidth % (side + gap) - gap;
+function initialization() {
     canvas.height = window.innerHeight - window.innerHeight % (side + gap) - gap;
-}
+    canvas.width = window.innerWidth - window.innerWidth % (side + gap) - gap;
+    //canvas.width = canvas.height;
 
-function fieldDefinition() {
     fieldHeight = (canvas.height + gap) / (side + gap);
     fieldWidth = (canvas.width + gap) / (side + gap);
-
-    /*
-    field = new Array(fieldHeight);
-    for (let i = 0; i < fieldHeight; i++) {
-        field[i] = new Array(fieldWidth);
-    }
-    tempField = new Array(fieldHeight);
-    for (let i = 0; i < fieldHeight; i++) {
-        tempField[i] = new Array(fieldWidth);
-    }
-    */
-    /*
-    field = [];
-    for (let i = 0; i < fieldHeight; i++) {
-        field.push(new Array(fieldWidth));
-    }
-    tempField = [];
-    for (let i = 0; i < fieldHeight; i++) {
-        tempField.push(new Array(fieldWidth));
-    }
-    */
 
     field = [];
     for (let i = 0; i < fieldHeight; i++) {
@@ -86,6 +69,7 @@ function fieldDefinition() {
         }
     }
 
+    //field determination
     for (let i = 0; i < fieldHeight; i++) {
         for (let j = 0; j < fieldWidth; j++) {
             if (Math.random() < initialFill) {
@@ -96,6 +80,7 @@ function fieldDefinition() {
         }
     }
 
+    //age determination
     for (let i = 0; i < fieldHeight; i++) {
         for (let j = 0; j < fieldWidth; j++) {
             if (field[i][j] == 1) {
@@ -104,7 +89,7 @@ function fieldDefinition() {
         }
     }
 
-    //alive cells drawing
+    //field drawing
     ctx.fillStyle = "#00FF00";
     for (let i = 0; i < fieldHeight; i++) {
         for (let j = 0; j < fieldWidth; j++) {
@@ -114,21 +99,13 @@ function fieldDefinition() {
         }
     }
 
-    //alive cells counting
-    for (let i = 0; i < fieldHeight; i++) {
-        for (let j = 0; j < fieldWidth; j++) {
-            if (field[i][j] == 1) {
-                cellsCount++;
-            }
-        }
-    }
+    cellsCounting();
 
     capacity = fieldHeight * fieldWidth;
 
-    generations++;
+    currentFillCalculation();
 
-    currentFill = cellsCount / capacity;
-    document.title = Math.round(currentFill * 1000) / 10 + " %";
+    generations = 1;
 }
 
 function go() {
@@ -138,64 +115,164 @@ function go() {
         }
     }
 
+    //neighbors counting
     for (let i = 0; i < fieldHeight; i++) {
         for (let j = 0; j < fieldWidth; j++) {
-            let count = 0;
+            let neighbors = 0;
 
+            //up left
             if (i != 0 && j != 0 && field[i - 1][j - 1] == 1) {
-                count++;
+                neighbors++;
             }
+
+            //up
             if (i != 0 && field[i - 1][j] == 1) {
-                count++;
+                neighbors++;
             }
+
+            //up right
             if (i != 0 && j != fieldWidth - 1 && field[i - 1][j + 1] == 1) {
-                count++;
+                neighbors++;
             }
+
+            //left
             if (j != 0 && field[i][j - 1] == 1) {
-                count++;
+                neighbors++;
             }
+
+            //right
             if (j != fieldWidth - 1 && field[i][j + 1] == 1) {
-                count++;
+                neighbors++;
             }
+
+            //down left
             if (i != fieldHeight - 1 && j != 0 && field[i + 1][j - 1] == 1) {
-                count++;
+                neighbors++;
             }
+
+            //down
             if (i != fieldHeight - 1 && field[i + 1][j] == 1) {
-                count++;
+                neighbors++;
             }
+
+            //down right
             if (i != fieldHeight - 1 && j != fieldWidth - 1 && field[i + 1][j + 1] == 1) {
-                count++;
+                neighbors++;
+            }
+
+            if (relatedBoundaries) {
+                //top row
+                if (i == 0) {
+                    if (j == 0) {
+                        if (field[fieldHeight - 1][fieldWidth - 1] == 1) {
+                            neighbors++;
+                        }
+                    } else {
+                        if (field[fieldHeight - 1][j - 1] == 1) {
+                            neighbors++;
+                        }
+                    }
+
+                    if (field[fieldHeight - 1][j] == 1) {
+                        neighbors++;
+                    }
+
+                    if (j == fieldWidth - 1) {
+                        if (field[fieldHeight - 1][0] == 1) {
+                            neighbors++;
+                        }
+                    } else {
+                        if (field[fieldHeight - 1][j + 1] == 1) {
+                            neighbors++;
+                        }
+                    }
+                }
+
+                //left column
+                if (j == 0) {
+                    if (i != 0) {
+                        if (field[i - 1][fieldWidth - 1] == 1) {
+                            neighbors++;
+                        }
+                    }
+
+                    if (field[i][fieldWidth - 1] == 1) {
+                        neighbors++;
+                    }
+
+                    if (i != fieldHeight - 1) {
+                        if (field[i + 1][fieldWidth - 1] == 1) {
+                            neighbors++;
+                        }
+                    }
+                }
+
+                //right column
+                if (j == fieldWidth - 1) {
+                    if (i != 0) {
+                        if (field[i - 1][0] == 1) {
+                            neighbors++;
+                        }
+                    }
+
+                    if (field[i][0] == 1) {
+                        neighbors++;
+                    }
+
+                    if (i != fieldHeight - 1) {
+                        if (field[i + 1][0] == 1) {
+                            neighbors++;
+                        }
+                    }
+                }
+
+                //bottom row
+                if (i == fieldHeight - 1) {
+                    if (j == 0) {
+                        if (field[0][fieldWidth - 1] == 1) {
+                            neighbors++;
+                        }
+                    } else {
+                        if (field[0][j - 1] == 1) {
+                            neighbors++;
+                        }
+                    }
+
+                    if (field[0][j] == 1) {
+                        neighbors++;
+                    }
+
+                    if (j == fieldWidth - 1) {
+                        if (field[0][0] == 1) {
+                            neighbors++;
+                        }
+                    } else {
+                        if (field[0][j + 1] == 1) {
+                            neighbors++;
+                        }
+                    }
+                }
             }
 
             if (mode == "day&night") {
-                if (currentFill < minFill) {
-                    mode = "B34/S3478"
-                }
-            } else {
-                if (currentFill > maxFill) {
-                    mode = "day&night"
-                }
-            }
-
-            if (mode == "day&night") {
-                //day & night
+                //day&night
                 if (field[i][j] == 0) {
-                    if (count == 3 || count >= 6) {
+                    if (neighbors == 3 || neighbors >= 6) {
                         tempField[i][j] = 1;
                     }
                 } else {
-                    if (count <= 2 || count == 5) {
+                    if (neighbors <= 2 || neighbors == 5) {
                         tempField[i][j] = 0;
                     }
                 }
             } else {
                 //B34/S3478 (max 48 %)
                 if (field[i][j] == 0) {
-                    if (count == 3 || count == 4) {
+                    if (neighbors == 3 || neighbors == 4) {
                         tempField[i][j] = 1;
                     }
                 } else {
-                    if (count <= 2 || count == 5 || count == 6) {
+                    if (neighbors <= 2 || neighbors == 5 || neighbors == 6) {
                         tempField[i][j] = 0;
                     }
                 }
@@ -203,110 +280,110 @@ function go() {
 
             //conway
             /*if (field[i][j] == 0) {
-                if (count == 3) {
+                if (neighbors == 3) {
                     tempField[i][j] = 1;
                 }
             } else {
-                if (count <= 1 || count >= 4) {
+                if (neighbors <= 1 || neighbors >= 4) {
                     tempField[i][j] = 0;
                 }
             }*/
 
-            //B34/S34 (max 41 %)
+            //B34/S34 (max 43 %)
             /*if (field[i][j] == 0) {
-                if (count == 3 || count == 4) {
+                if (neighbors == 3 || neighbors == 4) {
                     tempField[i][j] = 1;
                 }
             } else {
-                if (count <= 2 || count >= 5) {
+                if (neighbors <= 2 || neighbors >= 5) {
                     tempField[i][j] = 0;
                 }
             }*/
 
             //B34/S348 (max 43 %)
             /*if (field[i][j] == 0) {
-                if (count == 3 || count == 4) {
+                if (neighbors == 3 || neighbors == 4) {
                     tempField[i][j] = 1;
                 }
             } else {
-                if (count <= 2 || count == 5 || count == 6 || count == 7) {
+                if (neighbors <= 2 || neighbors == 5 || neighbors == 6 || neighbors == 7) {
                     tempField[i][j] = 0;
                 }
             }*/
 
             //B34/S347 (max 47 %)
             /*if (field[i][j] == 0) {
-                if (count == 3 || count == 4) {
+                if (neighbors == 3 || neighbors == 4) {
                     tempField[i][j] = 1;
                 }
             } else {
-                if (count <= 2 || count == 5 || count == 6 || count == 8) {
+                if (neighbors <= 2 || neighbors == 5 || neighbors == 6 || neighbors == 8) {
                     tempField[i][j] = 0;
                 }
             }*/
 
-            //B34/S3478 (max 48 %) исправлено
+            //B34/S3478 (max 48 %)
             /*if (field[i][j] == 0) {
-                if (count == 3 || count == 4) {
+                if (neighbors == 3 || neighbors == 4) {
                     tempField[i][j] = 1;
                 }
             } else {
-                if (count <= 2 || count == 5 || count == 6) {
+                if (neighbors <= 2 || neighbors == 5 || neighbors == 6) {
                     tempField[i][j] = 0;
                 }
             }*/
 
             //B34/S346 (max 52 %)
             /*if (field[i][j] == 0) {
-                if (count == 3 || count == 4) {
+                if (neighbors == 3 || neighbors == 4) {
                     tempField[i][j] = 1;
                 }
             } else {
-                if (count <= 2 || count == 5 || count >= 7) {
+                if (neighbors <= 2 || neighbors == 5 || neighbors >= 7) {
                     tempField[i][j] = 0;
                 }
             }*/
 
             //B34/S3468 (max 52 %)
             /*if (field[i][j] == 0) {
-                if (count == 3 || count == 4) {
+                if (neighbors == 3 || neighbors == 4) {
                     tempField[i][j] = 1;
                 }
             } else {
-                if (count <= 2 || count == 5 || count == 7) {
+                if (neighbors <= 2 || neighbors == 5 || neighbors == 7) {
                     tempField[i][j] = 0;
                 }
             }*/
 
             //B34/S3467 (max 54 %)
             /*if (field[i][j] == 0) {
-                if (count == 3 || count == 4) {
+                if (neighbors == 3 || neighbors == 4) {
                     tempField[i][j] = 1;
                 }
             } else {
-                if (count <= 2 || count == 5 || count == 8) {
+                if (neighbors <= 2 || neighbors == 5 || neighbors == 8) {
                     tempField[i][j] = 0;
                 }
             }*/
 
             //B34/S34678 (max 55 %)
             /*if (field[i][j] == 0) {
-                if (count == 3 || count == 4) {
+                if (neighbors == 3 || neighbors == 4) {
                     tempField[i][j] = 1;
                 }
             } else {
-                if (count <= 2 || count == 5) {
+                if (neighbors <= 2 || neighbors == 5) {
                     tempField[i][j] = 0;
                 }
             }*/
 
             //B34/S345 (max 56 %)
             /*if (field[i][j] == 0) {
-                if (count == 3 || count == 4) {
+                if (neighbors == 3 || neighbors == 4) {
                     tempField[i][j] = 1;
                 }
             } else {
-                if (count <= 2 || count >= 6) {
+                if (neighbors <= 2 || neighbors >= 6) {
                     tempField[i][j] = 0;
                 }
             }*/
@@ -338,10 +415,11 @@ function go() {
         }
     }
 
-    //field drawing
+    //field removing
     ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    //field drawing
     for (let i = 0; i < fieldHeight; i++) {
         for (let j = 0; j < fieldWidth; j++) {
             if (field[i][j] == 1) {
@@ -379,9 +457,24 @@ function go() {
         }
     }
 
-    generations++;
+    cellsCounting();
 
-    //alive cells counting
+    currentFillCalculation();
+
+    if (mode == "day&night") {
+        if (currentFill < minFill) {
+            mode = "B34/S3478"
+        }
+    } else {
+        if (currentFill > maxFill) {
+            mode = "day&night"
+        }
+    }
+
+    generations++;
+}
+
+function cellsCounting() {
     cellsCount = 0;
     for (let i = 0; i < fieldHeight; i++) {
         for (let j = 0; j < fieldWidth; j++) {
@@ -390,7 +483,9 @@ function go() {
             }
         }
     }
+}
 
+function currentFillCalculation() {
     currentFill = cellsCount / capacity;
     document.title = Math.round(currentFill * 1000) / 10 + " %";
 }
